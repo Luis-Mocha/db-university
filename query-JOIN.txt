@@ -1,0 +1,103 @@
+1. Selezionare tutti gli studenti iscritti al Corso di Laurea in Economia
+
+SELECT students.id, students.name, students.surname, degrees.id AS 'id_corso_laurea', degrees.name AS 'nome_corso_laurea' 
+FROM students
+JOIN degrees
+ON students.degree_id = degrees.id
+WHERE degrees.name = 'Corso di Laurea in Economia';
+
+---
+
+2. Selezionare tutti i Corsi di Laurea Magistrale del Dipartimento di Neuroscienze
+
+SELECT degrees.id, degrees.name, degrees.level, departments.id AS 'id_dipartimento', departments.name AS 'nome_dipartimento'
+FROM degrees
+JOIN departments
+ON degrees.department_id = departments.id
+WHERE departments.name = 'Dipartimento di Neuroscienze'
+AND degrees.level = 'magistrale';
+
+---
+
+3. Selezionare tutti i corsi in cui insegna Fulvio Amato
+
+SELECT course_teacher.course_id, course_teacher.teacher_id, teachers.name AS 'nome_professore', teachers.surname AS 'cognome_professore', courses.id AS 'id_corso', courses.name AS 'nome_corso'
+FROM `course_teacher`
+JOIN teachers
+ON course_teacher.teacher_id = teachers.id
+JOIN courses
+ON course_teacher.course_id = courses.id
+WHERE teachers.name = 'Fulvio';
+
+---
+
+4. Selezionare tutti gli studenti con i dati relativi al corso di laurea (degree) a cui sono iscritti e il relativo dipartimento, in ordine alfabetico per cognome e nome
+
+SELECT students.id, students.surname AS 'cognome_studente', students.name AS 'nome_studente', degrees.id AS 'id_degree', degrees.name AS 'nome_degree', departments.id AS 'id_dipartimento', departments.name AS 'nome_dipartimento'
+FROM `students`
+JOIN degrees
+ON students.degree_id = degrees.id
+JOIN departments
+ON degrees.department_id = departments.id
+ORDER BY students.surname, students.name;
+
+---
+
+5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
+
+SELECT degrees.id, degrees.name AS 'corso_di_laurea', courses.id AS 'id_corso', courses.name AS 'nome_corso', teachers.name AS 'nome_professore', teachers.surname AS 'cognome_professore'
+
+FROM courses
+
+JOIN course_teacher ON courses.id = course_teacher.course_id
+JOIN teachers ON course_teacher.teacher_id = teachers.id
+JOIN degrees ON courses.degree_id = degrees.id
+
+ORDER BY degrees.id;
+
+---
+
+6. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica
+
+SELECT departments.name AS 'nome_dipartimento', teachers.surname AS 'cognome_professore', teachers.name AS 'nome_professore', teachers.id AS 'id_professore'
+
+FROM `course_teacher`
+
+JOIN courses ON course_teacher.course_id = courses.id
+JOIN degrees ON courses.degree_id = degrees.id
+JOIN departments ON degrees.department_id = departments.id
+JOIN teachers ON course_teacher.teacher_id = teachers.id
+
+WHERE departments.name = 'Dipartimento di Matematica'
+ORDER BY teachers.surname, teachers.name;
+
+---
+
+7. BONUS: Selezionare per ogni studente il numero di tentativi sostenuti per ogni esame, stampando anche il voto massimo. Successivamente, filtrare i tentativi con voto minimo 18.
+
+SELECT
+students.id AS 'id_apello',
+students.surname AS 'cognome_studente',
+students.name AS 'nome_studente',
+courses.id AS id_corso,
+courses.name AS nome_corso,
+COUNT(exam_student.vote) AS numero_voti,
+MAX(exam_student.vote) AS 'voto_massimo'
+
+FROM exams
+
+JOIN courses ON exams.course_id = courses.id
+JOIN exam_student ON exams.id = exam_student.exam_id
+JOIN students ON exam_student.student_id = students.id
+
+GROUP BY
+students.id,
+students.surname,
+students.name,
+courses.id,
+courses.name
+
+ORDER BY
+students.id;
+
+(il risultato non viene filtrato per voto minimo 18)
