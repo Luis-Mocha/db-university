@@ -24,7 +24,7 @@ GROUP BY exam_id;
 
 4. Contare gli appelli d'esame del mese di luglio raggruppati per giorno
 
-SELECT DAY(date) AS giorno_esame, COUNT(*) AS numero_esami
+SELECT DATE(date) AS giorno_esame, COUNT(*) AS numero_esami
 FROM exams
 WHERE MONTH(date) = 7
 GROUP BY giorno_esame;
